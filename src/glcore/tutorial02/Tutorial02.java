@@ -72,6 +72,8 @@ public class Tutorial02 implements GLEventListener {
     private void createQuad(GL3 gl3) {
         int size = 4*6*3;
         FloatBuffer buf = ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        // coordinates have to be between -1.0f and 1.0f
+        // changing the z component doesn't change the rendered image
         buf.put(new float[] {
                 0.0f, 0.0f, 0.0f,
                 -1.0f, 0.0f, 0.0f,
