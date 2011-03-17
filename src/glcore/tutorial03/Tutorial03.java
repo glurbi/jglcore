@@ -1,4 +1,4 @@
-package glcore.tutorial02;
+package glcore.tutorial03;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.media.opengl.GL3;
 import javax.media.opengl.GLAutoDrawable;
@@ -19,20 +21,20 @@ import javax.swing.JFrame;
 /**
  * Draws a triangle and quad using a minimalistic vertex and fragment shader.
  */
-public class Tutorial02 implements GLEventListener {
+public class Tutorial03 implements GLEventListener {
     
     // Up to 16 attributes per vertex is allowed so any value between 0 and 15 will do.
     private static final int POSITION_ATTRIBUTE_INDEX = 12;
     
+    private Program program;
     private int triangleId;
     private int quadId;
-    private int programId;
     
     public void init(GLAutoDrawable drawable) {
         GL3 gl3 = (GL3) drawable.getGL();
         createTriangle(gl3);
         createQuad(gl3);
-        createSimpleProgram(gl3);
+        createProgram(gl3);
     }
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
@@ -44,7 +46,7 @@ public class Tutorial02 implements GLEventListener {
         GL3 gl3 = (GL3) drawable.getGL();
         gl3.glClear(GL3.GL_COLOR_BUFFER_BIT);
         // tells OpenGL which shader program to use for rendering
-        gl3.glUseProgram(programId); 
+        program.use(gl3); 
         renderTriangle(gl3);
         renderQuad(gl3);
         gl3.glFlush();
@@ -107,59 +109,14 @@ public class Tutorial02 implements GLEventListener {
         gl3.glDisableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
     }
     
-    private void createSimpleProgram(GL3 gl3) {
-        int vertexShaderId = gl3.glCreateShader(GL3.GL_VERTEX_SHADER);
-        String vertexShaderSource = loadTextResource("shader.vert");
-        gl3.glShaderSource(vertexShaderId, 1, new String[] { vertexShaderSource }, new int[] { vertexShaderSource.length() }, 0);
-        gl3.glCompileShader(vertexShaderId);
-        checkShaderStatus(gl3, vertexShaderId);
-        
-        int fragmentShaderId = gl3.glCreateShader(GL3.GL_FRAGMENT_SHADER);
-        String fragmentShaderSource = loadTextResource("shader.frag");
-        gl3.glShaderSource(fragmentShaderId, 1, new String[] { fragmentShaderSource }, new int[] { fragmentShaderSource.length() }, 0);
-        gl3.glCompileShader(fragmentShaderId);
-        checkShaderStatus(gl3, fragmentShaderId);
-        
-        programId = gl3.glCreateProgram();
-        gl3.glAttachShader(programId, vertexShaderId);
-        gl3.glAttachShader(programId, fragmentShaderId);
-        // associates the "inPosition" variable from the vertex shader with the position attribute
-        // the variable and the attribute must be bound before the program is linked
-        gl3.glBindAttribLocation(programId, POSITION_ATTRIBUTE_INDEX, "inPosition");
-        gl3.glLinkProgram(programId);
-        checkProgramLinkStatus(gl3, programId);
-    }
-
-    /**
-     * Checks the compilation status for a shader and displays the log if a failure occurred.
-     */
-    private void checkShaderStatus(GL3 gl3, int shaderId) {
-        int[] params = new int[1];
-        gl3.glGetShaderiv(shaderId, GL3.GL_COMPILE_STATUS, params, 0);
-        if (params[0] == GL3.GL_FALSE) {
-            gl3.glGetShaderiv(shaderId, GL3.GL_INFO_LOG_LENGTH, params, 0);
-            System.err.println("Shader compilation failed...");
-            byte[] bytes = new byte[8192];
-            int[] length = new int[1];
-            gl3.glGetShaderInfoLog(shaderId, 8192, length, 0, bytes, 0);
-            System.err.println(new String(bytes, 0, length[0]));
-        }
-    }
-    
-    /**
-     * Checks the link status for a program and displays the log if a failure occurred.
-     */
-    private void checkProgramLinkStatus(GL3 gl3, int programId) {
-        int[] params = new int[1];
-        gl3.glGetProgramiv(programId, GL3.GL_LINK_STATUS, params, 0);
-        if (params[0] == GL3.GL_FALSE) {
-            gl3.glGetProgramiv(programId, GL3.GL_INFO_LOG_LENGTH, params, 0);
-            System.err.println("Program link failed...");
-            byte[] bytes = new byte[8192];
-            int[] length = new int[1];
-            gl3.glGetProgramInfoLog(programId, 8192, length, 0, bytes, 0);
-            System.err.println(new String(bytes, 0, length[0]));
-        }
+    private void createProgram(GL3 gl3) {
+        ProgramBuilder builder = new ProgramBuilder();
+        builder.setVertexShaderSource(loadTextResource("shader.vert"));
+        builder.setFragmentShaderSource(loadTextResource("shader.frag"));
+        Map<Integer, String> attributes = new HashMap<Integer, String>();
+        attributes.put(POSITION_ATTRIBUTE_INDEX, "inPosition");
+        builder.setAttributes(attributes);
+        program = builder.build(gl3);
     }
     
     private String loadTextResource(String name) {
@@ -174,7 +131,7 @@ public class Tutorial02 implements GLEventListener {
     }
     
     public static void main(String[] args) {
-        Tutorial02 tutorial = new Tutorial02();
+        Tutorial03 tutorial = new Tutorial03();
         JFrame frame = new JFrame();
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
