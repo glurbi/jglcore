@@ -41,6 +41,12 @@ public class Tutorial03 implements GLEventListener {
         GL3 gl3 = (GL3) drawable.getGL();
         gl3.glClear(GL3.GL_COLOR_BUFFER_BIT);
         program.use(gl3);
+
+        // defines the model view projection matrix and set the corresponding uniform
+        float[] mvp = ortho(-2.0f, 2.0f, -2.0f, 2.0f, -1.0f, -3.0f);
+        int matrix = gl3.glGetUniformLocation(program.getProgramId(), "mvpMatrix");
+        gl3.glUniformMatrix4fv(matrix, 1, false, mvp, 0);
+        
         triangle.render(gl3);
         quad.render(gl3);
         gl3.glFlush();
@@ -55,9 +61,9 @@ public class Tutorial03 implements GLEventListener {
     private void createTriangle(GL3 gl3) {
         GeometryBuilder builder = new GeometryBuilder();
         FloatBuffer buf = ByteBuffer.allocateDirect(4*3*3).order(ByteOrder.nativeOrder()).asFloatBuffer();
-        buf.put(new float[] { 0.0f, 0.0f, 0.0f });
-        buf.put(new float[] { 1.0f, 0.0f, 0.0f });
-        buf.put(new float[] { 0.0f, 1.0f, 0.0f });
+        buf.put(new float[] { 0.0f, 0.0f, -2.0f });
+        buf.put(new float[] { 1.0f, 0.0f, -2.0f });
+        buf.put(new float[] { 0.0f, 1.0f, -2.0f });
         buf.flip();
         builder.setBuffer(buf);
         builder.setBufferSize(4*3*3);
@@ -70,12 +76,12 @@ public class Tutorial03 implements GLEventListener {
     private void createQuad(GL3 gl3) {
         GeometryBuilder builder = new GeometryBuilder();
         FloatBuffer buf = ByteBuffer.allocateDirect(4*6*3).order(ByteOrder.nativeOrder()).asFloatBuffer();
-        buf.put(new float[] { 0.0f, 0.0f, 0.0f });
-        buf.put(new float[] { -1.0f, 0.0f, 0.0f });
-        buf.put(new float[] { 0.0f, -1.0f, 0.0f });
-        buf.put(new float[] { 0.0f, -1.0f, 0.0f });
-        buf.put(new float[] { -1.0f, -1.0f, 0.0f });
-        buf.put(new float[] { -1.0f, 0.0f, 0.0f });
+        buf.put(new float[] { 0.0f, 0.0f, -2.0f });
+        buf.put(new float[] { -1.0f, 0.0f, -2.0f });
+        buf.put(new float[] { 0.0f, -1.0f, -2.0f });
+        buf.put(new float[] { 0.0f, -1.0f, -2.0f });
+        buf.put(new float[] { -1.0f, -1.0f, -2.0f });
+        buf.put(new float[] { -1.0f, 0.0f, -2.0f });
         buf.flip();
         builder.setBuffer(buf);
         builder.setBufferSize(4*6*3);
@@ -90,9 +96,32 @@ public class Tutorial03 implements GLEventListener {
         builder.setVertexShaderSource(loadTextResource("shader.vert", this));
         builder.setFragmentShaderSource(loadTextResource("shader.frag", this));
         Map<Integer, String> attributes = new HashMap<Integer, String>();
-        attributes.put(POSITION_ATTRIBUTE_INDEX, "inPosition");
+        attributes.put(POSITION_ATTRIBUTE_INDEX, "position");
         builder.setAttributes(attributes);
         program = builder.build(gl3);
+    }
+    
+    // Generate a orthogonal projection matrix as defined at:
+    // http://www.opengl.org/sdk/docs/man/xhtml/glOrtho.xml
+    private float[] ortho(float left,float right, float bottom, float top, float near, float far) {
+        float[] matrix = new float[16];
+        matrix[0] = 2 / (right - left);
+        matrix[1] = 0.0f;
+        matrix[2] = 0.0f;
+        matrix[3] = 0.0f;
+        matrix[4] = 0.0f;
+        matrix[5] = 2 / (top - bottom);
+        matrix[6] = 0.0f;
+        matrix[7] = 0.0f;
+        matrix[8] = 0.0f;
+        matrix[9] = 0.0f;
+        matrix[10] = 2 / (far - near);
+        matrix[11] = 0.0f;
+        matrix[12] = - (right + left) / (right - left);
+        matrix[13] = - (top + bottom) / (top - bottom);
+        matrix[14] = - (far + near) / (far - near);
+        matrix[15] = 1.0f;
+        return matrix;
     }
     
     public static void main(String[] args) {

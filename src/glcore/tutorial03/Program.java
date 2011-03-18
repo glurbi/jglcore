@@ -10,6 +10,10 @@ public class Program {
         this.programId = programId;
     }
     
+    public int getProgramId() {
+        return programId;
+    }
+    
     public void use(GL3 gl3) {
         gl3.glUseProgram(programId);         
     }
