@@ -19,8 +19,7 @@ import javax.media.opengl.GLEventListener;
  */
 public class Tutorial03 implements GLEventListener {
     
-    // Up to 16 attributes per vertex is allowed so any value between 0 and 15 will do.
-    private static final int POSITION_ATTRIBUTE_INDEX = 12;
+    private static final int POSITION_ATTRIBUTE_INDEX = 0;
     
     private Program program;
     private Geometry triangle;
@@ -41,7 +40,6 @@ public class Tutorial03 implements GLEventListener {
     public void display(GLAutoDrawable drawable) {
         GL3 gl3 = (GL3) drawable.getGL();
         gl3.glClear(GL3.GL_COLOR_BUFFER_BIT);
-        // tells OpenGL which shader program to use for rendering
         program.use(gl3);
         triangle.render(gl3);
         quad.render(gl3);
@@ -64,6 +62,7 @@ public class Tutorial03 implements GLEventListener {
         builder.setBuffer(buf);
         builder.setBufferSize(4*3*3);
         builder.setAttributeIndex(POSITION_ATTRIBUTE_INDEX);
+        builder.setPrimitiveType(GL3.GL_TRIANGLES);
         builder.setVertexCount(3);
         triangle = builder.build(gl3);
     }
@@ -81,6 +80,7 @@ public class Tutorial03 implements GLEventListener {
         builder.setBuffer(buf);
         builder.setBufferSize(4*6*3);
         builder.setAttributeIndex(POSITION_ATTRIBUTE_INDEX);
+        builder.setPrimitiveType(GL3.GL_TRIANGLES);
         builder.setVertexCount(6);
         quad = builder.build(gl3);
     }
