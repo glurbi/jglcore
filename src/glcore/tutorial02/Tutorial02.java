@@ -17,7 +17,8 @@ import javax.media.opengl.awt.GLCanvas;
 import javax.swing.JFrame;
 
 /**
- * Draws a triangle and quad using a minimalistic vertex and fragment shader.
+ * This tutorial builds on Tutorial01, and introduces compilation, link and usage
+ * of two minimalistic vertex and fragment shaders.
  */
 public class Tutorial02 implements GLEventListener {
     
