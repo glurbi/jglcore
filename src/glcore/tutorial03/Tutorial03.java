@@ -21,9 +21,19 @@ public class Tutorial03 implements GLEventListener {
     
     private static final int POSITION_ATTRIBUTE_INDEX = 0;
     
+    // defines the orthographic projection volume
+    private static final float left = -2.0f;
+    private static final float right = 2.0f;
+    private static final float bottom = -2.0f;
+    private static final float top = 2.0f;
+    private static final float near = 1.0f;
+    private static final float far = -1.0f;
+    
     private Program program;
     private Geometry triangle;
     private Geometry quad;
+    
+    private float aspectRatio;
     
     public void init(GLAutoDrawable drawable) {
         GL3 gl3 = (GL3) drawable.getGL();
@@ -35,6 +45,8 @@ public class Tutorial03 implements GLEventListener {
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
         GL3 gl3 = (GL3) drawable.getGL();
         gl3.glViewport(0, 0, width, height);
+        // we keep track of the aspect ratio to adjust the projection volume
+        aspectRatio = 1.0f * width / height;
     }
 
     public void display(GLAutoDrawable drawable) {
@@ -43,7 +55,8 @@ public class Tutorial03 implements GLEventListener {
         program.use(gl3);
 
         // defines the model view projection matrix and set the corresponding uniform
-        float[] mvp = ortho(-2.0f, 2.0f, -2.0f, 2.0f, 2.0f, -2.0f);
+        // NB: bottom and top are adjusted with the aspect ratio
+        float[] mvp = ortho(left, right, bottom / aspectRatio, top / aspectRatio, near, far);
         int matrix = gl3.glGetUniformLocation(program.getProgramId(), "mvpMatrix");
         gl3.glUniformMatrix4fv(matrix, 1, false, mvp, 0);
         
