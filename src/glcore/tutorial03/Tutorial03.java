@@ -43,9 +43,13 @@ public class Tutorial03 implements GLEventListener {
         program.use(gl3);
 
         // defines the model view projection matrix and set the corresponding uniform
-        float[] mvp = ortho(-2.0f, 2.0f, -2.0f, 2.0f, -1.0f, -3.0f);
+        float[] mvp = ortho(-2.0f, 2.0f, -2.0f, 2.0f, 2.0f, -2.0f);
         int matrix = gl3.glGetUniformLocation(program.getProgramId(), "mvpMatrix");
         gl3.glUniformMatrix4fv(matrix, 1, false, mvp, 0);
+        
+        // set the uniform for the global geometry color
+        int color = gl3.glGetUniformLocation(program.getProgramId(), "color");
+        gl3.glUniform4f(color, 0.0f, 1.0f, 0.0f, 1.0f);
         
         triangle.render(gl3);
         quad.render(gl3);
@@ -61,9 +65,9 @@ public class Tutorial03 implements GLEventListener {
     private void createTriangle(GL3 gl3) {
         GeometryBuilder builder = new GeometryBuilder();
         FloatBuffer buf = ByteBuffer.allocateDirect(4*3*3).order(ByteOrder.nativeOrder()).asFloatBuffer();
-        buf.put(new float[] { 0.0f, 0.0f, -2.0f });
-        buf.put(new float[] { 1.0f, 0.0f, -2.0f });
-        buf.put(new float[] { 0.0f, 1.0f, -2.0f });
+        buf.put(new float[] { 0.0f, 0.0f, 0.0f });
+        buf.put(new float[] { 1.0f, 0.0f, 0.0f });
+        buf.put(new float[] { 0.0f, 1.0f, 0.0f });
         buf.flip();
         builder.setBuffer(buf);
         builder.setBufferSize(4*3*3);
@@ -76,12 +80,12 @@ public class Tutorial03 implements GLEventListener {
     private void createQuad(GL3 gl3) {
         GeometryBuilder builder = new GeometryBuilder();
         FloatBuffer buf = ByteBuffer.allocateDirect(4*6*3).order(ByteOrder.nativeOrder()).asFloatBuffer();
-        buf.put(new float[] { 0.0f, 0.0f, -2.0f });
-        buf.put(new float[] { -1.0f, 0.0f, -2.0f });
-        buf.put(new float[] { 0.0f, -1.0f, -2.0f });
-        buf.put(new float[] { 0.0f, -1.0f, -2.0f });
-        buf.put(new float[] { -1.0f, -1.0f, -2.0f });
-        buf.put(new float[] { -1.0f, 0.0f, -2.0f });
+        buf.put(new float[] { 0.0f, 0.0f, 0.0f });
+        buf.put(new float[] { -1.0f, 0.0f, 0.0f });
+        buf.put(new float[] { 0.0f, -1.0f, 0.0f });
+        buf.put(new float[] { 0.0f, -1.0f, 0.0f });
+        buf.put(new float[] { -1.0f, -1.0f, 0.0f });
+        buf.put(new float[] { -1.0f, 0.0f, 0.0f });
         buf.flip();
         builder.setBuffer(buf);
         builder.setBufferSize(4*6*3);
