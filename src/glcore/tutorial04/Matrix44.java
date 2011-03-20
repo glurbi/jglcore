@@ -17,10 +17,11 @@ public class Matrix44 {
     	Matrix44 matrix = new Matrix44();
     	for (int i = 0; i < 4; i++) {
     		for (int j = 0; j < 4; j++) {
-    			matrix.m[i+j*4] = this.m[i+0] * that.m[j*4+0]
-    			                + this.m[i+4] * that.m[j*4+1]
-                                + this.m[i+8] * that.m[j*4+2]
-       			                + this.m[i+12] * that.m[j*4+3];
+    			matrix.m[i+j*4] =
+    				this.m[i+0] * that.m[j*4+0] +
+    				this.m[i+4] * that.m[j*4+1] +
+    				this.m[i+8] * that.m[j*4+2] +
+    				this.m[i+12] * that.m[j*4+3];
     		}
     	}
     	return matrix;

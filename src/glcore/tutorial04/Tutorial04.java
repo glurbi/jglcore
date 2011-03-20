@@ -21,14 +21,15 @@ import javax.media.opengl.GLEventListener;
 public class Tutorial04 implements GLEventListener {
     
     private static final int POSITION_ATTRIBUTE_INDEX = 0;
+    private static final int COLOR_ATTRIBUTE_INDEX = 1;
     
     // defines the orthographic projection volume
-    private static final float left = -2.0f;
-    private static final float right = 2.0f;
-    private static final float bottom = -2.0f;
-    private static final float top = 2.0f;
-    private static final float near = 1.0f;
-    private static final float far = -1.0f;
+    private static final float left = -4.0f;
+    private static final float right = 4.0f;
+    private static final float bottom = -4.0f;
+    private static final float top = 4.0f;
+    private static final float near = -1.0f;
+    private static final float far = -10.0f;
     
     private Program program;
     private Geometry triangle;
@@ -61,10 +62,6 @@ public class Tutorial04 implements GLEventListener {
         int matrix = gl3.glGetUniformLocation(program.getProgramId(), "mvpMatrix");
         gl3.glUniformMatrix4fv(matrix, 1, false, mvp.peek().raw(), 0);
         
-        // set the uniform for the global geometry color
-        int color = gl3.glGetUniformLocation(program.getProgramId(), "color");
-        gl3.glUniform4f(color, 0.0f, 1.0f, 0.0f, 1.0f);
-        
         triangle.render(gl3);
         quad.render(gl3);
         gl3.glFlush();
@@ -78,14 +75,18 @@ public class Tutorial04 implements GLEventListener {
     
     private void createTriangle(GL3 gl3) {
         GeometryBuilder builder = new GeometryBuilder();
-        FloatBuffer buf = ByteBuffer.allocateDirect(4*3*3).order(ByteOrder.nativeOrder()).asFloatBuffer();
-        buf.put(new float[] { 0.0f, 0.0f, 0.0f });
-        buf.put(new float[] { 1.0f, 0.0f, 0.0f });
-        buf.put(new float[] { 0.0f, 1.0f, 0.0f });
-        buf.flip();
-        builder.setBuffer(buf);
-        builder.setBufferSize(4*3*3);
-        builder.setAttributeIndex(POSITION_ATTRIBUTE_INDEX);
+        FloatBuffer vertices = ByteBuffer.allocateDirect(4*3*3).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        vertices.put(new float[] { 0.0f, 0.0f, -5.0f });
+        vertices.put(new float[] { 1.0f, 0.0f, -5.0f });
+        vertices.put(new float[] { 0.0f, 1.0f, -5.0f });
+        vertices.flip();
+        builder.addAtribute(POSITION_ATTRIBUTE_INDEX, 4*3*3, vertices);
+        FloatBuffer colors = ByteBuffer.allocateDirect(4*3*3).order(ByteOrder.nativeOrder()).asFloatBuffer();        
+        colors.put(new float[] { 1.0f, 0.0f, 0.0f });
+        colors.put(new float[] { 0.0f, 1.0f, 0.0f });
+        colors.put(new float[] { 0.0f, 0.0f, 1.0f });
+        colors.flip();
+        builder.addAtribute(COLOR_ATTRIBUTE_INDEX, 4*3*3, colors);
         builder.setPrimitiveType(GL3.GL_TRIANGLES);
         builder.setVertexCount(3);
         triangle = builder.build(gl3);
@@ -94,16 +95,14 @@ public class Tutorial04 implements GLEventListener {
     private void createQuad(GL3 gl3) {
         GeometryBuilder builder = new GeometryBuilder();
         FloatBuffer buf = ByteBuffer.allocateDirect(4*6*3).order(ByteOrder.nativeOrder()).asFloatBuffer();
-        buf.put(new float[] { 0.0f, 0.0f, 0.0f });
-        buf.put(new float[] { -1.0f, 0.0f, 0.0f });
-        buf.put(new float[] { 0.0f, -1.0f, 0.0f });
-        buf.put(new float[] { 0.0f, -1.0f, 0.0f });
-        buf.put(new float[] { -1.0f, -1.0f, 0.0f });
-        buf.put(new float[] { -1.0f, 0.0f, 0.0f });
+        buf.put(new float[] { 0.0f, 0.0f, -5.0f });
+        buf.put(new float[] { -1.0f, 0.0f, -5.0f });
+        buf.put(new float[] { 0.0f, -1.0f, -5.0f });
+        buf.put(new float[] { 0.0f, -1.0f, -5.0f });
+        buf.put(new float[] { -1.0f, -1.0f, -5.0f });
+        buf.put(new float[] { -1.0f, 0.0f, -5.0f });
         buf.flip();
-        builder.setBuffer(buf);
-        builder.setBufferSize(4*6*3);
-        builder.setAttributeIndex(POSITION_ATTRIBUTE_INDEX);
+        builder.addAtribute(POSITION_ATTRIBUTE_INDEX, 4*6*3, buf);
         builder.setPrimitiveType(GL3.GL_TRIANGLES);
         builder.setVertexCount(6);
         quad = builder.build(gl3);
@@ -115,6 +114,7 @@ public class Tutorial04 implements GLEventListener {
         builder.setFragmentShaderSource(loadTextResource("shader.frag", this));
         Map<Integer, String> attributes = new HashMap<Integer, String>();
         attributes.put(POSITION_ATTRIBUTE_INDEX, "position");
+        attributes.put(COLOR_ATTRIBUTE_INDEX, "color");
         builder.setAttributes(attributes);
         program = builder.build(gl3);
     }

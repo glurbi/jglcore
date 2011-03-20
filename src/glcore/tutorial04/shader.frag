@@ -5,5 +5,5 @@ out vec4 fragColor;
 
 void main(void) 
 { 
-	fragColor = gl_Color; 
+	fragColor = gl_Color;
 }
