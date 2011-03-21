@@ -3,6 +3,9 @@ package glcore.tutorial04;
 import glcore.tutorial04.Geometry.Attribute;
 
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,12 +33,12 @@ public class GeometryBuilder {
     	return this;
     }
     
-    public GeometryBuilder addAtribute(int attributeIndex, int components, int dataType, Buffer buffer) {
+    public GeometryBuilder addAtribute(int attributeIndex, int components, int dataType, Object data) {
     	AttributeData attribute = new AttributeData();
     	attribute.attributeIndex = attributeIndex;
     	attribute.components = components;
     	attribute.dataType = dataType;
-    	attribute.buffer = buffer;
+    	attribute.buffer = makeBuffer(dataType, data);
     	attributesData.add(attribute);
         return this;
     }
@@ -70,6 +73,28 @@ public class GeometryBuilder {
         case GL3.GL_UNSIGNED_BYTE: return 1;
         default: throw new UnsupportedOperationException("Data type not supported");
         }
+    }
+    
+    private Buffer makeBuffer(int dataType, Object data) {
+        switch (dataType) {
+        case GL3.GL_FLOAT: return makeFloatBuffer((float[]) data);
+        case GL3.GL_UNSIGNED_BYTE: return makeUbyteBuffer((byte[]) data);
+        default: throw new UnsupportedOperationException("Data type not supported");
+        }
+    }
+    
+    private Buffer makeFloatBuffer(float[] data) {
+        return ByteBuffer.allocateDirect(4*data.length)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer()
+                .put(data)
+                .flip();
+    }
+    
+    private Buffer makeUbyteBuffer(byte[] data) {
+        return ByteBuffer.allocateDirect(data.length)
+                .put(data)
+                .flip();
     }
     
 }

@@ -3,9 +3,6 @@ package glcore.tutorial04;
 import static glcore.tutorial03.Utils.browse;
 import static glcore.tutorial03.Utils.loadTextResource;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -27,6 +24,12 @@ public class Tutorial04 implements GLEventListener {
         0.0f, 0.0f, -5.0f,
         1.0f, 0.0f, -5.0f,
         0.0f, 1.0f, -5.0f
+    };
+    
+    private static final float[] triangleColors = {
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f
     };
     
     private static final float[] quadVertices = {
@@ -90,16 +93,8 @@ public class Tutorial04 implements GLEventListener {
     
     private void createTriangle(GL3 gl3) {
         GeometryBuilder builder = new GeometryBuilder();
-        FloatBuffer vertices = ByteBuffer.allocateDirect(4*3*3).order(ByteOrder.nativeOrder()).asFloatBuffer();
-        vertices.put(triangleVertices);
-        vertices.flip();
-        builder.addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, vertices);
-        FloatBuffer colors = ByteBuffer.allocateDirect(4*3*3).order(ByteOrder.nativeOrder()).asFloatBuffer();        
-        colors.put(new float[] { 1.0f, 0.0f, 0.0f });
-        colors.put(new float[] { 0.0f, 1.0f, 0.0f });
-        colors.put(new float[] { 0.0f, 0.0f, 1.0f });
-        colors.flip();
-        builder.addAtribute(COLOR_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, colors);
+        builder.addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, triangleVertices);
+        builder.addAtribute(COLOR_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, triangleColors);
         builder.setPrimitiveType(GL3.GL_TRIANGLES);
         builder.setVertexCount(3);
         triangle = builder.build(gl3);
@@ -107,10 +102,7 @@ public class Tutorial04 implements GLEventListener {
     
     private void createQuad(GL3 gl3) {
         GeometryBuilder builder = new GeometryBuilder();
-        FloatBuffer buf = ByteBuffer.allocateDirect(4*6*3).order(ByteOrder.nativeOrder()).asFloatBuffer();
-        buf.put(quadVertices);
-        buf.flip();
-        builder.addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, buf);
+        builder.addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, quadVertices);
         builder.setPrimitiveType(GL3.GL_TRIANGLES);
         builder.setVertexCount(6);
         quad = builder.build(gl3);
