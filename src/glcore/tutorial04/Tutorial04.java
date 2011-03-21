@@ -11,8 +11,11 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
 /**
- * This tutorial is built on top of Tutorial03. It introduces classes to manage
- * the matrix stack and allows to do transformations to the model.
+ * This tutorial is built on top of Tutorial03. It introduces the Matrix44 class
+ * to allow transformations of the Model View Projection matrix. It demonstrates
+ * the difference between the orthogonal projection and the perspective projection
+ * by swapping at regular interval. It also uses several attributes per vertex for
+ * rendering (position and color).
  */
 public class Tutorial04 implements GLEventListener {
     
@@ -20,9 +23,9 @@ public class Tutorial04 implements GLEventListener {
     private static final int COLOR_ATTRIBUTE_INDEX = 1;
     
     private static final float[] triangleVertices = {
-        0.0f, 0.0f, -5.0f,
-        1.0f, 0.0f, -5.0f,
-        0.0f, 1.0f, -5.0f
+        0.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f
     };
     
     private static final float[] triangleColors = {
@@ -32,12 +35,12 @@ public class Tutorial04 implements GLEventListener {
     };
     
     private static final float[] quadVertices = {
-        0.0f, 0.0f, -5.0f,
-        -1.0f, 0.0f, -5.0f,
-        0.0f, -1.0f, -5.0f,
-        0.0f, -1.0f, -5.0f,
-        -1.0f, -1.0f, -5.0f,
-        -1.0f, 0.0f, -5.0f
+        0.0f, 0.0f, 0.0f,
+        -1.0f, 0.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f,
+        -1.0f, 0.0f, 0.0f
     };
     
     private static final byte[] quadColors = {
@@ -49,13 +52,15 @@ public class Tutorial04 implements GLEventListener {
         ubyte(0), ubyte(255), ubyte(0)
     };
     
-    // defines the orthographic projection volume
-    private static final float left = -4.0f;
-    private static final float right = 4.0f;
-    private static final float bottom = -4.0f;
-    private static final float top = 4.0f;
-    private static final float near = -1.0f;
-    private static final float far = -10.0f;
+    private static long start = System.currentTimeMillis();
+    
+    // defines the projection volume
+    private static final float left = -2.0f;
+    private static final float right = 2.0f;
+    private static final float bottom = -2.0f;
+    private static final float top = 2.0f;
+    private static final float near = 1.0f;
+    private static final float far = 10.0f;
     
     private Program program;
     private Geometry triangle;
@@ -64,7 +69,8 @@ public class Tutorial04 implements GLEventListener {
     private float aspectRatio;
     
     public void init(GLAutoDrawable drawable) {
-        GL3 gl3 = (GL3) drawable.getGL();
+        
+        GL3 gl3 = drawable.getGL().getGL3();
         
         triangle = new GeometryBuilder()
                     .addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, triangleVertices)
@@ -86,29 +92,45 @@ public class Tutorial04 implements GLEventListener {
                     .addAttribute(POSITION_ATTRIBUTE_INDEX, "position")
                     .addAttribute(COLOR_ATTRIBUTE_INDEX, "color")
                     .build(gl3);
-
     }
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        GL3 gl3 = (GL3) drawable.getGL();
+        GL3 gl3 = drawable.getGL().getGL3();
         gl3.glViewport(0, 0, width, height);
         // we keep track of the aspect ratio to adjust the projection volume
         aspectRatio = 1.0f * width / height;
     }
 
     public void display(GLAutoDrawable drawable) {
+        long elapsed = System.currentTimeMillis() - start;
     	Stack<Matrix44> mvp = new Stack<Matrix44>();
-        GL3 gl3 = (GL3) drawable.getGL();
+        GL3 gl3 = drawable.getGL().getGL3();
         gl3.glClear(GL3.GL_COLOR_BUFFER_BIT);
         program.use(gl3);
 
+        // every 5 seconds, we swap from orthogonal to perspective projection
         mvp.push(Matrix44.identity());
-        mvp.push(mvp.peek().ortho(left, right, bottom / aspectRatio, top / aspectRatio, near, far));
-        int matrix = gl3.glGetUniformLocation(program.getProgramId(), "mvpMatrix");
-        gl3.glUniformMatrix4fv(matrix, 1, false, mvp.peek().raw(), 0);
+        if (elapsed / 5000 % 2 == 0) {
+            mvp.push(mvp.peek().ortho(left, right, bottom / aspectRatio, top / aspectRatio, near, far));
+        } else {
+            mvp.push(mvp.peek().frustum(left, right, bottom / aspectRatio, top / aspectRatio, near, far));
+        }
         
+        int matrix = gl3.glGetUniformLocation(program.getProgramId(), "mvpMatrix");
+        
+        mvp.push(mvp.peek().translate(0.0f, 0.0f, -2.0f));
+        mvp.push(mvp.peek().rotate(elapsed / 10, 0.0f, 1.0f, 0.0f));
+        gl3.glUniformMatrix4fv(matrix, 1, false, mvp.peek().raw(), 0);
         triangle.render(gl3);
+        mvp.pop();
+
+        mvp.push(mvp.peek().rotate(elapsed / 5, 0.0f, 1.0f, 0.0f));
+        gl3.glUniformMatrix4fv(matrix, 1, false, mvp.peek().raw(), 0);
         quad.render(gl3);
+        mvp.pop();
+        
+        mvp.pop();
+        
         gl3.glFlush();
     }
 
