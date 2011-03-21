@@ -57,9 +57,27 @@ public class Tutorial04 implements GLEventListener {
     
     public void init(GLAutoDrawable drawable) {
         GL3 gl3 = (GL3) drawable.getGL();
-        createTriangle(gl3);
-        createQuad(gl3);
-        createProgram(gl3);
+        
+        triangle = new GeometryBuilder()
+                    .addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, triangleVertices)
+                    .addAtribute(COLOR_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, triangleColors)
+                    .setPrimitiveType(GL3.GL_TRIANGLES)
+                    .setVertexCount(3)
+                    .build(gl3);
+        
+        quad = new GeometryBuilder()
+                    .addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, quadVertices)
+                    .setPrimitiveType(GL3.GL_TRIANGLES)
+                    .setVertexCount(6)
+                    .build(gl3);
+
+        program = new ProgramBuilder()
+                    .setVertexShaderSource(loadTextResource("shader.vert", this))
+                    .setFragmentShaderSource(loadTextResource("shader.frag", this))
+                    .addAttribute(POSITION_ATTRIBUTE_INDEX, "position")
+                    .addAttribute(COLOR_ATTRIBUTE_INDEX, "color")
+                    .build(gl3);
+
     }
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
@@ -91,37 +109,8 @@ public class Tutorial04 implements GLEventListener {
     public void dispose(GLAutoDrawable drawable) {
     }
     
-    private void createTriangle(GL3 gl3) {
-        GeometryBuilder builder = new GeometryBuilder();
-        builder.addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, triangleVertices);
-        builder.addAtribute(COLOR_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, triangleColors);
-        builder.setPrimitiveType(GL3.GL_TRIANGLES);
-        builder.setVertexCount(3);
-        triangle = builder.build(gl3);
-    }
-    
-    private void createQuad(GL3 gl3) {
-        GeometryBuilder builder = new GeometryBuilder();
-        builder.addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, quadVertices);
-        builder.setPrimitiveType(GL3.GL_TRIANGLES);
-        builder.setVertexCount(6);
-        quad = builder.build(gl3);
-    }
-    
-    private void createProgram(GL3 gl3) {
-        ProgramBuilder builder = new ProgramBuilder();
-        builder.setVertexShaderSource(loadTextResource("shader.vert", this));
-        builder.setFragmentShaderSource(loadTextResource("shader.frag", this));
-        Map<Integer, String> attributes = new HashMap<Integer, String>();
-        attributes.put(POSITION_ATTRIBUTE_INDEX, "position");
-        attributes.put(COLOR_ATTRIBUTE_INDEX, "color");
-        builder.setAttributes(attributes);
-        program = builder.build(gl3);
-    }
-    
     public static void main(String[] args) {
-        Tutorial04 tutorial = new Tutorial04();
-        browse(tutorial);
+        browse(new Tutorial04());
     }
 
 }

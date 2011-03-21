@@ -12,16 +12,28 @@ public class ProgramBuilder {
     private String fragmentShaderSource;
     private Map<Integer, String> attributes;
 
-    public void setVertexShaderSource(String vertexShaderSource) {
-        this.vertexShaderSource = vertexShaderSource;
-    }
-
-    public void setFragmentShaderSource(String fragmentShaderSource) {
-        this.fragmentShaderSource = fragmentShaderSource;
+    public ProgramBuilder() {
+        reset();
     }
     
-    public void setAttributes(Map<Integer, String> attributes) {
-        this.attributes = new HashMap<Integer, String>(attributes);
+    public ProgramBuilder reset() {
+        attributes = new HashMap<Integer, String>();
+        return this;
+    }
+    
+    public ProgramBuilder setVertexShaderSource(String vertexShaderSource) {
+        this.vertexShaderSource = vertexShaderSource;
+        return this;
+    }
+
+    public ProgramBuilder setFragmentShaderSource(String fragmentShaderSource) {
+        this.fragmentShaderSource = fragmentShaderSource;
+        return this;
+    }
+    
+    public ProgramBuilder addAttribute(Integer index, String name) {
+        attributes.put(index, name);
+        return this;
     }
     
     public Program build(GL3 gl3) {
