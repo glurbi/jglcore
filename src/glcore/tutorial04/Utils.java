@@ -24,6 +24,10 @@ public class Utils {
         }
     }
 
+    public static byte ubyte(int i) {
+        return (byte)(i & 0xff);
+    }
+    
     public static void browse(GLEventListener glEventListener) {
         JFrame frame = new JFrame();
         frame.addWindowListener(new WindowAdapter() {

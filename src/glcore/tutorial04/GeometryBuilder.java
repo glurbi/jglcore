@@ -5,7 +5,6 @@ import glcore.tutorial04.Geometry.Attribute;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,10 +1,9 @@
 package glcore.tutorial04;
 
-import static glcore.tutorial03.Utils.browse;
-import static glcore.tutorial03.Utils.loadTextResource;
+import static glcore.tutorial04.Utils.browse;
+import static glcore.tutorial04.Utils.loadTextResource;
+import static glcore.tutorial04.Utils.ubyte;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 
 import javax.media.opengl.GL3;
@@ -41,6 +40,15 @@ public class Tutorial04 implements GLEventListener {
         -1.0f, 0.0f, -5.0f
     };
     
+    private static final byte[] quadColors = {
+        ubyte(255), ubyte(0), ubyte(0),
+        ubyte(0), ubyte(255), ubyte(0),
+        ubyte(0), ubyte(0), ubyte(255),
+        ubyte(0), ubyte(0), ubyte(255),
+        ubyte(255), ubyte(0), ubyte(0),
+        ubyte(0), ubyte(255), ubyte(0)
+    };
+    
     // defines the orthographic projection volume
     private static final float left = -4.0f;
     private static final float right = 4.0f;
@@ -67,6 +75,7 @@ public class Tutorial04 implements GLEventListener {
         
         quad = new GeometryBuilder()
                     .addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, quadVertices)
+                    .addAtribute(COLOR_ATTRIBUTE_INDEX, 3, GL3.GL_UNSIGNED_BYTE, quadColors)
                     .setPrimitiveType(GL3.GL_TRIANGLES)
                     .setVertexCount(6)
                     .build(gl3);
