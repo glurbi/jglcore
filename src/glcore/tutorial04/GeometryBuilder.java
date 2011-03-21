@@ -1,60 +1,76 @@
 package glcore.tutorial04;
 
+import glcore.tutorial04.Geometry.Attribute;
+
 import java.nio.Buffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.media.opengl.GL3;
 
 public class GeometryBuilder {
 
-	private static class GeometryAttribute {
+	private static class AttributeData {
 		public Buffer buffer;
-		public int bufferSize;
 		public int attributeIndex;
+		public int dataType;
+		public int components;
 	}
 	
     private int vertexCount;
     private int primitiveType;
-    private List<GeometryAttribute> attributes;
+    private List<AttributeData> attributesData;
     
     public GeometryBuilder() {
     	reset();
     }
     
-    public void reset() {
-    	attributes = new ArrayList<GeometryAttribute>();
+    public GeometryBuilder reset() {
+    	attributesData = new ArrayList<AttributeData>();
+    	return this;
     }
     
-    public void addAtribute(int attributeIndex, int bufferSize, Buffer buffer) {
-    	GeometryAttribute attribute = new GeometryAttribute();
+    public GeometryBuilder addAtribute(int attributeIndex, int components, int dataType, Buffer buffer) {
+    	AttributeData attribute = new AttributeData();
     	attribute.attributeIndex = attributeIndex;
-    	attribute.bufferSize = bufferSize;
+    	attribute.components = components;
+    	attribute.dataType = dataType;
     	attribute.buffer = buffer;
-    	attributes.add(attribute);
+    	attributesData.add(attribute);
+        return this;
     }
     
-    public void setVertexCount(int vertexCount) {
+    public GeometryBuilder setVertexCount(int vertexCount) {
         this.vertexCount = vertexCount;
+        return this;
     }
 
-    public void setPrimitiveType(int primitiveType) {
+    public GeometryBuilder setPrimitiveType(int primitiveType) {
         this.primitiveType = primitiveType;
+        return this;
     }
     
     public Geometry build(GL3 gl3) {
-        int[] buffers = new int[attributes.size()];
-        gl3.glGenBuffers(attributes.size(), buffers, 0);
-        Map<Integer, Integer> attributeMap = new HashMap<Integer, Integer>();
-        for (int i = 0; i < attributes.size(); i++) {
-        	GeometryAttribute attribute = attributes.get(i);
+        int[] buffers = new int[attributesData.size()];
+        gl3.glGenBuffers(attributesData.size(), buffers, 0);
+        List<Attribute> attributes = new ArrayList<Attribute>();
+        for (int i = 0; i < attributesData.size(); i++) {
+        	AttributeData attribute = attributesData.get(i);
+        	int size = componentSize(attribute.dataType) * attribute.buffer.limit();
         	gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, buffers[i]);
-        	gl3.glBufferData(GL3.GL_ARRAY_BUFFER, attribute.bufferSize, attribute.buffer, GL3.GL_STATIC_DRAW);
-        	attributeMap.put(attribute.attributeIndex, buffers[i]);
+        	gl3.glBufferData(GL3.GL_ARRAY_BUFFER, size, attribute.buffer, GL3.GL_STATIC_DRAW);
+        	attributes.add(new Attribute(attribute.attributeIndex, buffers[i], attribute.components, attribute.dataType));
         }
-        return new Geometry(attributeMap, vertexCount, primitiveType);
+        return new Geometry(attributes, vertexCount, primitiveType);
     }
 
+    private int componentSize(int dataType) {
+        switch (dataType) {
+        case GL3.GL_FLOAT: return 4;
+        case GL3.GL_UNSIGNED_BYTE: return 1;
+        default: throw new UnsupportedOperationException("Data type not supported");
+        }
+    }
+    
 }
+
