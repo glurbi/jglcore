@@ -9,7 +9,7 @@ import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.media.opengl.GL3;
+import javax.media.opengl.GL4;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
@@ -36,37 +36,37 @@ public class Tutorial03 implements GLEventListener {
     private float aspectRatio;
     
     public void init(GLAutoDrawable drawable) {
-        GL3 gl3 = (GL3) drawable.getGL();
-        createTriangle(gl3);
-        createQuad(gl3);
-        createProgram(gl3);
+        GL4 gl4 = (GL4) drawable.getGL();
+        createTriangle(gl4);
+        createQuad(gl4);
+        createProgram(gl4);
     }
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        GL3 gl3 = (GL3) drawable.getGL();
-        gl3.glViewport(0, 0, width, height);
+        GL4 gl4 = (GL4) drawable.getGL();
+        gl4.glViewport(0, 0, width, height);
         // we keep track of the aspect ratio to adjust the projection volume
         aspectRatio = 1.0f * width / height;
     }
 
     public void display(GLAutoDrawable drawable) {
-        GL3 gl3 = (GL3) drawable.getGL();
-        gl3.glClear(GL3.GL_COLOR_BUFFER_BIT);
-        program.use(gl3);
+        GL4 gl4 = (GL4) drawable.getGL();
+        gl4.glClear(GL4.GL_COLOR_BUFFER_BIT);
+        program.use(gl4);
 
         // defines the model view projection matrix and set the corresponding uniform
         // NB: bottom and top are adjusted with the aspect ratio
         float[] mvp = ortho(left, right, bottom / aspectRatio, top / aspectRatio, near, far);
-        int matrix = gl3.glGetUniformLocation(program.getProgramId(), "mvpMatrix");
-        gl3.glUniformMatrix4fv(matrix, 1, false, mvp, 0);
+        int matrix = gl4.glGetUniformLocation(program.getProgramId(), "mvpMatrix");
+        gl4.glUniformMatrix4fv(matrix, 1, false, mvp, 0);
         
         // set the uniform for the global geometry color
-        int color = gl3.glGetUniformLocation(program.getProgramId(), "color");
-        gl3.glUniform4f(color, 0.0f, 1.0f, 0.0f, 1.0f);
+        int color = gl4.glGetUniformLocation(program.getProgramId(), "color");
+        gl4.glUniform4f(color, 0.0f, 1.0f, 0.0f, 1.0f);
         
-        triangle.render(gl3);
-        quad.render(gl3);
-        gl3.glFlush();
+        triangle.render(gl4);
+        quad.render(gl4);
+        gl4.glFlush();
     }
 
     public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
@@ -75,7 +75,7 @@ public class Tutorial03 implements GLEventListener {
     public void dispose(GLAutoDrawable drawable) {
     }
     
-    private void createTriangle(GL3 gl3) {
+    private void createTriangle(GL4 gl4) {
         GeometryBuilder builder = new GeometryBuilder();
         FloatBuffer buf = ByteBuffer.allocateDirect(4*3*3).order(ByteOrder.nativeOrder()).asFloatBuffer();
         buf.put(new float[] { 0.0f, 0.0f, 0.0f });
@@ -85,12 +85,12 @@ public class Tutorial03 implements GLEventListener {
         builder.setBuffer(buf);
         builder.setBufferSize(4*3*3);
         builder.setAttributeIndex(POSITION_ATTRIBUTE_INDEX);
-        builder.setPrimitiveType(GL3.GL_TRIANGLES);
+        builder.setPrimitiveType(GL4.GL_TRIANGLES);
         builder.setVertexCount(3);
-        triangle = builder.build(gl3);
+        triangle = builder.build(gl4);
     }
     
-    private void createQuad(GL3 gl3) {
+    private void createQuad(GL4 gl4) {
         GeometryBuilder builder = new GeometryBuilder();
         FloatBuffer buf = ByteBuffer.allocateDirect(4*6*3).order(ByteOrder.nativeOrder()).asFloatBuffer();
         buf.put(new float[] { 0.0f, 0.0f, 0.0f });
@@ -103,19 +103,19 @@ public class Tutorial03 implements GLEventListener {
         builder.setBuffer(buf);
         builder.setBufferSize(4*6*3);
         builder.setAttributeIndex(POSITION_ATTRIBUTE_INDEX);
-        builder.setPrimitiveType(GL3.GL_TRIANGLES);
+        builder.setPrimitiveType(GL4.GL_TRIANGLES);
         builder.setVertexCount(6);
-        quad = builder.build(gl3);
+        quad = builder.build(gl4);
     }
     
-    private void createProgram(GL3 gl3) {
+    private void createProgram(GL4 gl4) {
         ProgramBuilder builder = new ProgramBuilder();
         builder.setVertexShaderSource(loadTextResource("shader.vert", this));
         builder.setFragmentShaderSource(loadTextResource("shader.frag", this));
         Map<Integer, String> attributes = new HashMap<Integer, String>();
         attributes.put(POSITION_ATTRIBUTE_INDEX, "position");
         builder.setAttributes(attributes);
-        program = builder.build(gl3);
+        program = builder.build(gl4);
     }
     
     // Generate a orthogonal projection matrix as defined at:

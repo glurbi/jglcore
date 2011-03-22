@@ -8,7 +8,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL3;
+import javax.media.opengl.GL4;
 
 public class GeometryBuilder {
 
@@ -52,15 +52,15 @@ public class GeometryBuilder {
         return this;
     }
     
-    public Geometry build(GL3 gl3) {
+    public Geometry build(GL4 gl4) {
         int[] buffers = new int[attributesData.size()];
-        gl3.glGenBuffers(attributesData.size(), buffers, 0);
+        gl4.glGenBuffers(attributesData.size(), buffers, 0);
         List<Attribute> attributes = new ArrayList<Attribute>();
         for (int i = 0; i < attributesData.size(); i++) {
         	AttributeData attribute = attributesData.get(i);
         	int size = componentSize(attribute.dataType) * attribute.buffer.limit();
-        	gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, buffers[i]);
-        	gl3.glBufferData(GL3.GL_ARRAY_BUFFER, size, attribute.buffer, GL3.GL_STATIC_DRAW);
+        	gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, buffers[i]);
+        	gl4.glBufferData(GL4.GL_ARRAY_BUFFER, size, attribute.buffer, GL4.GL_STATIC_DRAW);
         	attributes.add(new Attribute(attribute.attributeIndex, buffers[i], attribute.components, attribute.dataType));
         }
         return new Geometry(attributes, vertexCount, primitiveType);
@@ -68,16 +68,16 @@ public class GeometryBuilder {
 
     private int componentSize(int dataType) {
         switch (dataType) {
-        case GL3.GL_FLOAT: return 4;
-        case GL3.GL_UNSIGNED_BYTE: return 1;
+        case GL4.GL_FLOAT: return 4;
+        case GL4.GL_UNSIGNED_BYTE: return 1;
         default: throw new UnsupportedOperationException("Data type not supported");
         }
     }
     
     private Buffer makeBuffer(int dataType, Object data) {
         switch (dataType) {
-        case GL3.GL_FLOAT: return makeFloatBuffer((float[]) data);
-        case GL3.GL_UNSIGNED_BYTE: return makeUbyteBuffer((byte[]) data);
+        case GL4.GL_FLOAT: return makeFloatBuffer((float[]) data);
+        case GL4.GL_UNSIGNED_BYTE: return makeUbyteBuffer((byte[]) data);
         default: throw new UnsupportedOperationException("Data type not supported");
         }
     }

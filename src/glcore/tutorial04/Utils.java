@@ -35,7 +35,7 @@ public class Utils {
                 System.exit(0);
             }
         });
-        final GLProfile profile = GLProfile.get(GLProfile.GL3);
+        final GLProfile profile = GLProfile.get(GLProfile.GL4);
         GLCapabilities capabilities = new GLCapabilities(profile);
         final GLCanvas canvas = new GLCanvas(capabilities);
         canvas.addGLEventListener(glEventListener);

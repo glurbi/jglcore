@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import javax.media.opengl.GL3;
+import javax.media.opengl.GL4;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
@@ -30,25 +30,25 @@ public class Tutorial02 implements GLEventListener {
     private int programId;
     
     public void init(GLAutoDrawable drawable) {
-        GL3 gl3 = (GL3) drawable.getGL();
-        createTriangle(gl3);
-        createQuad(gl3);
-        createSimpleProgram(gl3);
+        GL4 gl4 = (GL4) drawable.getGL();
+        createTriangle(gl4);
+        createQuad(gl4);
+        createSimpleProgram(gl4);
     }
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        GL3 gl3 = (GL3) drawable.getGL();
-        gl3.glViewport(0, 0, width, height);
+        GL4 gl4 = (GL4) drawable.getGL();
+        gl4.glViewport(0, 0, width, height);
     }
 
     public void display(GLAutoDrawable drawable) {
-        GL3 gl3 = (GL3) drawable.getGL();
-        gl3.glClear(GL3.GL_COLOR_BUFFER_BIT);
+        GL4 gl4 = (GL4) drawable.getGL();
+        gl4.glClear(GL4.GL_COLOR_BUFFER_BIT);
         // tells OpenGL which shader program to use for rendering
-        gl3.glUseProgram(programId); 
-        renderTriangle(gl3);
-        renderQuad(gl3);
-        gl3.glFlush();
+        gl4.glUseProgram(programId); 
+        renderTriangle(gl4);
+        renderQuad(gl4);
+        gl4.glFlush();
     }
 
     public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
@@ -57,7 +57,7 @@ public class Tutorial02 implements GLEventListener {
     public void dispose(GLAutoDrawable drawable) {
     }
     
-    private void createTriangle(GL3 gl3) {
+    private void createTriangle(GL4 gl4) {
         int size = 4*3*3;
         FloatBuffer buf = ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder()).asFloatBuffer();
         buf.put(new float[] {
@@ -66,13 +66,13 @@ public class Tutorial02 implements GLEventListener {
                 0.0f, 1.0f, 0.0f });
         buf.flip();
         int[] buffers = new int[1]; 
-        gl3.glGenBuffers(1, buffers, 0);
-        gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, buffers[0]);
-        gl3.glBufferData(GL3.GL_ARRAY_BUFFER, size, buf, GL3.GL_STATIC_DRAW);
+        gl4.glGenBuffers(1, buffers, 0);
+        gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, buffers[0]);
+        gl4.glBufferData(GL4.GL_ARRAY_BUFFER, size, buf, GL4.GL_STATIC_DRAW);
         triangleId = buffers[0];
     }
     
-    private void createQuad(GL3 gl3) {
+    private void createQuad(GL4 gl4) {
         int size = 4*6*3;
         FloatBuffer buf = ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder()).asFloatBuffer();
         // coordinates have to be between -1.0f and 1.0f
@@ -86,63 +86,63 @@ public class Tutorial02 implements GLEventListener {
                 -1.0f, 0.0f, 0.0f});
         buf.flip();
         int[] buffers = new int[1]; 
-        gl3.glGenBuffers(1, buffers, 0);
-        gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, buffers[0]);
-        gl3.glBufferData(GL3.GL_ARRAY_BUFFER, size, buf, GL3.GL_STATIC_DRAW);
+        gl4.glGenBuffers(1, buffers, 0);
+        gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, buffers[0]);
+        gl4.glBufferData(GL4.GL_ARRAY_BUFFER, size, buf, GL4.GL_STATIC_DRAW);
         quadId = buffers[0];
     }
     
-    private void renderTriangle(GL3 gl3) {
-        gl3.glEnableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
-        gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, triangleId);
-        gl3.glVertexAttribPointer(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, false, 0, 0);
-        gl3.glDrawArrays(GL3.GL_TRIANGLES, 0, 3);
-        gl3.glDisableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
+    private void renderTriangle(GL4 gl4) {
+        gl4.glEnableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
+        gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, triangleId);
+        gl4.glVertexAttribPointer(POSITION_ATTRIBUTE_INDEX, 3, GL4.GL_FLOAT, false, 0, 0);
+        gl4.glDrawArrays(GL4.GL_TRIANGLES, 0, 3);
+        gl4.glDisableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
     }
     
-    private void renderQuad(GL3 gl3) {
-        gl3.glEnableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
-        gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, quadId);
-        gl3.glVertexAttribPointer(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, false, 0, 0);
-        gl3.glDrawArrays(GL3.GL_TRIANGLES, 0, 6);
-        gl3.glDisableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
+    private void renderQuad(GL4 gl4) {
+        gl4.glEnableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
+        gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, quadId);
+        gl4.glVertexAttribPointer(POSITION_ATTRIBUTE_INDEX, 3, GL4.GL_FLOAT, false, 0, 0);
+        gl4.glDrawArrays(GL4.GL_TRIANGLES, 0, 6);
+        gl4.glDisableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
     }
     
-    private void createSimpleProgram(GL3 gl3) {
-        int vertexShaderId = gl3.glCreateShader(GL3.GL_VERTEX_SHADER);
+    private void createSimpleProgram(GL4 gl4) {
+        int vertexShaderId = gl4.glCreateShader(GL4.GL_VERTEX_SHADER);
         String vertexShaderSource = loadTextResource("shader.vert");
-        gl3.glShaderSource(vertexShaderId, 1, new String[] { vertexShaderSource }, new int[] { vertexShaderSource.length() }, 0);
-        gl3.glCompileShader(vertexShaderId);
-        checkShaderStatus(gl3, vertexShaderId);
+        gl4.glShaderSource(vertexShaderId, 1, new String[] { vertexShaderSource }, new int[] { vertexShaderSource.length() }, 0);
+        gl4.glCompileShader(vertexShaderId);
+        checkShaderStatus(gl4, vertexShaderId);
         
-        int fragmentShaderId = gl3.glCreateShader(GL3.GL_FRAGMENT_SHADER);
+        int fragmentShaderId = gl4.glCreateShader(GL4.GL_FRAGMENT_SHADER);
         String fragmentShaderSource = loadTextResource("shader.frag");
-        gl3.glShaderSource(fragmentShaderId, 1, new String[] { fragmentShaderSource }, new int[] { fragmentShaderSource.length() }, 0);
-        gl3.glCompileShader(fragmentShaderId);
-        checkShaderStatus(gl3, fragmentShaderId);
+        gl4.glShaderSource(fragmentShaderId, 1, new String[] { fragmentShaderSource }, new int[] { fragmentShaderSource.length() }, 0);
+        gl4.glCompileShader(fragmentShaderId);
+        checkShaderStatus(gl4, fragmentShaderId);
         
-        programId = gl3.glCreateProgram();
-        gl3.glAttachShader(programId, vertexShaderId);
-        gl3.glAttachShader(programId, fragmentShaderId);
+        programId = gl4.glCreateProgram();
+        gl4.glAttachShader(programId, vertexShaderId);
+        gl4.glAttachShader(programId, fragmentShaderId);
         // associates the "inPosition" variable from the vertex shader with the position attribute
         // the variable and the attribute must be bound before the program is linked
-        gl3.glBindAttribLocation(programId, POSITION_ATTRIBUTE_INDEX, "inPosition");
-        gl3.glLinkProgram(programId);
-        checkProgramLinkStatus(gl3, programId);
+        gl4.glBindAttribLocation(programId, POSITION_ATTRIBUTE_INDEX, "inPosition");
+        gl4.glLinkProgram(programId);
+        checkProgramLinkStatus(gl4, programId);
     }
 
     /**
      * Checks the compilation status for a shader and displays the log if a failure occurred.
      */
-    private void checkShaderStatus(GL3 gl3, int shaderId) {
+    private void checkShaderStatus(GL4 gl4, int shaderId) {
         int[] params = new int[1];
-        gl3.glGetShaderiv(shaderId, GL3.GL_COMPILE_STATUS, params, 0);
-        if (params[0] == GL3.GL_FALSE) {
-            gl3.glGetShaderiv(shaderId, GL3.GL_INFO_LOG_LENGTH, params, 0);
+        gl4.glGetShaderiv(shaderId, GL4.GL_COMPILE_STATUS, params, 0);
+        if (params[0] == GL4.GL_FALSE) {
+            gl4.glGetShaderiv(shaderId, GL4.GL_INFO_LOG_LENGTH, params, 0);
             System.err.println("Shader compilation failed...");
             byte[] bytes = new byte[8192];
             int[] length = new int[1];
-            gl3.glGetShaderInfoLog(shaderId, 8192, length, 0, bytes, 0);
+            gl4.glGetShaderInfoLog(shaderId, 8192, length, 0, bytes, 0);
             System.err.println(new String(bytes, 0, length[0]));
         }
     }
@@ -150,15 +150,15 @@ public class Tutorial02 implements GLEventListener {
     /**
      * Checks the link status for a program and displays the log if a failure occurred.
      */
-    private void checkProgramLinkStatus(GL3 gl3, int programId) {
+    private void checkProgramLinkStatus(GL4 gl4, int programId) {
         int[] params = new int[1];
-        gl3.glGetProgramiv(programId, GL3.GL_LINK_STATUS, params, 0);
-        if (params[0] == GL3.GL_FALSE) {
-            gl3.glGetProgramiv(programId, GL3.GL_INFO_LOG_LENGTH, params, 0);
+        gl4.glGetProgramiv(programId, GL4.GL_LINK_STATUS, params, 0);
+        if (params[0] == GL4.GL_FALSE) {
+            gl4.glGetProgramiv(programId, GL4.GL_INFO_LOG_LENGTH, params, 0);
             System.err.println("Program link failed...");
             byte[] bytes = new byte[8192];
             int[] length = new int[1];
-            gl3.glGetProgramInfoLog(programId, 8192, length, 0, bytes, 0);
+            gl4.glGetProgramInfoLog(programId, 8192, length, 0, bytes, 0);
             System.err.println(new String(bytes, 0, length[0]));
         }
     }
@@ -182,7 +182,7 @@ public class Tutorial02 implements GLEventListener {
                 System.exit(0);
             }
         });
-        final GLProfile profile = GLProfile.get(GLProfile.GL3);
+        final GLProfile profile = GLProfile.get(GLProfile.GL4);
     	GLCapabilities capabilities = new GLCapabilities(profile);
         final GLCanvas canvas = new GLCanvas(capabilities);
         canvas.addGLEventListener(tutorial);

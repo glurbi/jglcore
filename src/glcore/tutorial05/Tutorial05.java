@@ -3,7 +3,7 @@ package glcore.tutorial05;
 import static glcore.tutorial05.Utils.browse;
 import static glcore.tutorial05.Utils.loadTextResource;
 
-import javax.media.opengl.GL3;
+import javax.media.opengl.GL4;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
@@ -134,26 +134,26 @@ public class Tutorial05 implements GLEventListener {
     
     public void init(GLAutoDrawable drawable) {
         
-        GL3 gl3 = drawable.getGL().getGL3();
+        GL4 gl4 = (GL4) drawable.getGL();
         
         cube = new GeometryBuilder()
-                    .addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, cubeVertices)
-                    .addAtribute(NORMAL_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, cubeNormals)
-                    .setPrimitiveType(GL3.GL_TRIANGLES)
+                    .addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL4.GL_FLOAT, cubeVertices)
+                    .addAtribute(NORMAL_ATTRIBUTE_INDEX, 3, GL4.GL_FLOAT, cubeNormals)
+                    .setPrimitiveType(GL4.GL_TRIANGLES)
                     .setVertexCount(36)
-                    .build(gl3);
+                    .build(gl4);
         
         program = new ProgramBuilder()
                     .setVertexShaderSource(loadTextResource("shader.vert", this))
                     .setFragmentShaderSource(loadTextResource("shader.frag", this))
                     .addAttribute(POSITION_ATTRIBUTE_INDEX, "position")
                     .addAttribute(NORMAL_ATTRIBUTE_INDEX, "color")
-                    .build(gl3);
+                    .build(gl4);
     }
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        GL3 gl3 = drawable.getGL().getGL3();
-        gl3.glViewport(0, 0, width, height);
+        GL4 gl4 = (GL4) drawable.getGL();
+        gl4.glViewport(0, 0, width, height);
         // we keep track of the aspect ratio to adjust the projection volume
         aspectRatio = 1.0f * width / height;
     }
@@ -161,28 +161,28 @@ public class Tutorial05 implements GLEventListener {
     public void display(GLAutoDrawable drawable) {
         long elapsed = System.currentTimeMillis() - start;
     	MatrixStack stack = new MatrixStack();
-        GL3 gl3 = drawable.getGL().getGL3();
-        gl3.glClear(GL3.GL_COLOR_BUFFER_BIT);
-        gl3.glEnable(GL3.GL_CULL_FACE);
-        gl3.glPolygonMode(GL3.GL_FRONT_AND_BACK, GL3.GL_LINE);
-        program.use(gl3);
+        GL4 gl4 = (GL4) drawable.getGL();
+        gl4.glClear(GL4.GL_COLOR_BUFFER_BIT);
+        gl4.glEnable(GL4.GL_CULL_FACE);
+        gl4.glPolygonMode(GL4.GL_FRONT_AND_BACK, GL4.GL_LINE);
+        program.use(gl4);
 
-        int matrix = gl3.glGetUniformLocation(program.getProgramId(), "mvpMatrix");
-        int color = gl3.glGetUniformLocation(program.getProgramId(), "color");
+        int matrix = gl4.glGetUniformLocation(program.getProgramId(), "mvpMatrix");
+        int color = gl4.glGetUniformLocation(program.getProgramId(), "color");
         
         stack.push(Matrix44.frustum(left, right, bottom / aspectRatio, top / aspectRatio, near, far));
         stack.push(Matrix44.translate(0.0f, 0.0f, -3.0f));
         stack.push(Matrix44.rotate(elapsed / 10, 1.0f, 0.0f, 0.0f));
         stack.push(Matrix44.rotate(elapsed / 5, 0.0f, 1.0f, 0.0f));
-        gl3.glUniformMatrix4fv(matrix, 1, false, stack.getModelViewProjection().raw(), 0);
-        gl3.glUniform3f(color, 0.0f, 1.0f, 0.0f);
-        cube.render(gl3);
+        gl4.glUniformMatrix4fv(matrix, 1, false, stack.getModelViewProjection().raw(), 0);
+        gl4.glUniform3f(color, 0.0f, 1.0f, 0.0f);
+        cube.render(gl4);
         stack.pop();
         stack.pop();
         stack.pop();
         stack.pop();
         
-        gl3.glFlush();
+        gl4.glFlush();
     }
 
     public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {

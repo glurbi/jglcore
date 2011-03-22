@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import javax.media.opengl.GL3;
+import javax.media.opengl.GL4;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
@@ -28,23 +28,23 @@ public class Tutorial01 implements GLEventListener {
     private int quadId;
     
     public void init(GLAutoDrawable drawable) {
-        GL3 gl3 = (GL3) drawable.getGL();
-        createTriangle(gl3);
-        createQuad(gl3);
+        GL4 gl4 = (GL4) drawable.getGL();
+        createTriangle(gl4);
+        createQuad(gl4);
     }
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        GL3 gl3 = (GL3) drawable.getGL();
+        GL4 gl4 = (GL4) drawable.getGL();
         // we want to draw on the entire window
-        gl3.glViewport(0, 0, width, height);
+        gl4.glViewport(0, 0, width, height);
     }
 
     public void display(GLAutoDrawable drawable) {
-        GL3 gl3 = (GL3) drawable.getGL();
-        gl3.glClear(GL3.GL_COLOR_BUFFER_BIT);
-        renderTriangle(gl3);
-        renderQuad(gl3);
-        gl3.glFlush();
+        GL4 gl4 = (GL4) drawable.getGL();
+        gl4.glClear(GL4.GL_COLOR_BUFFER_BIT);
+        renderTriangle(gl4);
+        renderQuad(gl4);
+        gl4.glFlush();
     }
 
     public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
@@ -53,7 +53,7 @@ public class Tutorial01 implements GLEventListener {
     public void dispose(GLAutoDrawable drawable) {
     }
     
-    private void createTriangle(GL3 gl3) {
+    private void createTriangle(GL4 gl4) {
         int size = 4*3*3; // 4 bytes per float, 3 vertices per triangle, 3 coordinates per vertex
         FloatBuffer buf = ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder()).asFloatBuffer();
         buf.put(new float[] {
@@ -62,14 +62,14 @@ public class Tutorial01 implements GLEventListener {
                 0.0f, 1.0f, 0.0f });
         buf.flip();
         int[] buffers = new int[1]; 
-        gl3.glGenBuffers(1, buffers, 0);
-        gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, buffers[0]);
-        gl3.glBufferData(GL3.GL_ARRAY_BUFFER, size, buf, GL3.GL_STATIC_DRAW);
+        gl4.glGenBuffers(1, buffers, 0);
+        gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, buffers[0]);
+        gl4.glBufferData(GL4.GL_ARRAY_BUFFER, size, buf, GL4.GL_STATIC_DRAW);
         triangleId = buffers[0];
     }
     
-    private void createQuad(GL3 gl3) {
-        // OpenGL 3.3 does not support quads, so we have to create 2 triangles
+    private void createQuad(GL4 gl4) {
+        // OpenGL 3.1 core profile does not support quads, so we have to create 2 triangles
         int size = 4*6*3;
         FloatBuffer buf = ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder()).asFloatBuffer();
         buf.put(new float[] {
@@ -81,26 +81,26 @@ public class Tutorial01 implements GLEventListener {
                 -1.0f, 0.0f, 0.0f});
         buf.flip();
         int[] buffers = new int[1]; 
-        gl3.glGenBuffers(1, buffers, 0);
-        gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, buffers[0]);
-        gl3.glBufferData(GL3.GL_ARRAY_BUFFER, size, buf, GL3.GL_STATIC_DRAW);
+        gl4.glGenBuffers(1, buffers, 0);
+        gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, buffers[0]);
+        gl4.glBufferData(GL4.GL_ARRAY_BUFFER, size, buf, GL4.GL_STATIC_DRAW);
         quadId = buffers[0];
     }
     
-    private void renderTriangle(GL3 gl3) {
-        gl3.glEnableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
-        gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, triangleId);
-        gl3.glVertexAttribPointer(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, false, 0, 0);
-        gl3.glDrawArrays(GL3.GL_TRIANGLES, 0, 3);
-        gl3.glDisableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
+    private void renderTriangle(GL4 gl4) {
+        gl4.glEnableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
+        gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, triangleId);
+        gl4.glVertexAttribPointer(POSITION_ATTRIBUTE_INDEX, 3, GL4.GL_FLOAT, false, 0, 0);
+        gl4.glDrawArrays(GL4.GL_TRIANGLES, 0, 3);
+        gl4.glDisableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
     }
     
-    private void renderQuad(GL3 gl3) {
-        gl3.glEnableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
-        gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, quadId);
-        gl3.glVertexAttribPointer(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, false, 0, 0);
-        gl3.glDrawArrays(GL3.GL_TRIANGLES, 0, 6);
-        gl3.glDisableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
+    private void renderQuad(GL4 gl4) {
+        gl4.glEnableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
+        gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, quadId);
+        gl4.glVertexAttribPointer(POSITION_ATTRIBUTE_INDEX, 3, GL4.GL_FLOAT, false, 0, 0);
+        gl4.glDrawArrays(GL4.GL_TRIANGLES, 0, 6);
+        gl4.glDisableVertexAttribArray(POSITION_ATTRIBUTE_INDEX);
     }
     
     public static void main(String[] args) {
@@ -111,7 +111,7 @@ public class Tutorial01 implements GLEventListener {
                 System.exit(0);
             }
         });
-        final GLProfile profile = GLProfile.get(GLProfile.GL3);
+        final GLProfile profile = GLProfile.get(GLProfile.GL4);
     	GLCapabilities capabilities = new GLCapabilities(profile);
         final GLCanvas canvas = new GLCanvas(capabilities);
         canvas.addGLEventListener(tutorial);

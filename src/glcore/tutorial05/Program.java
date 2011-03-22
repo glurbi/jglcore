@@ -1,6 +1,6 @@
 package glcore.tutorial05;
 
-import javax.media.opengl.GL3;
+import javax.media.opengl.GL4;
 
 public class Program {
 
@@ -14,8 +14,8 @@ public class Program {
         return programId;
     }
     
-    public void use(GL3 gl3) {
-        gl3.glUseProgram(programId);         
+    public void use(GL4 gl4) {
+        gl4.glUseProgram(programId);         
     }
     
 }

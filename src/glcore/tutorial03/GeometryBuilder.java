@@ -2,7 +2,7 @@ package glcore.tutorial03;
 
 import java.nio.Buffer;
 
-import javax.media.opengl.GL3;
+import javax.media.opengl.GL4;
 
 public class GeometryBuilder {
 
@@ -32,11 +32,11 @@ public class GeometryBuilder {
         this.primitiveType = primitiveType;
     }
     
-    public Geometry build(GL3 gl3) {
+    public Geometry build(GL4 gl4) {
         int[] buffers = new int[1]; 
-        gl3.glGenBuffers(1, buffers, 0);
-        gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, buffers[0]);
-        gl3.glBufferData(GL3.GL_ARRAY_BUFFER, bufferSize, buffer, GL3.GL_STATIC_DRAW);
+        gl4.glGenBuffers(1, buffers, 0);
+        gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, buffers[0]);
+        gl4.glBufferData(GL4.GL_ARRAY_BUFFER, bufferSize, buffer, GL4.GL_STATIC_DRAW);
         return new Geometry(buffers[0], attributeIndex, vertexCount, primitiveType);
     }
 

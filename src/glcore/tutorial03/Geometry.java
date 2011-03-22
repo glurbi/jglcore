@@ -1,6 +1,6 @@
 package glcore.tutorial03;
 
-import javax.media.opengl.GL3;
+import javax.media.opengl.GL4;
 
 public class Geometry {
 
@@ -16,12 +16,12 @@ public class Geometry {
         this.primitiveType = primitiveType;
     }
     
-    public void render(GL3 gl3) {
-        gl3.glEnableVertexAttribArray(attributeIndex);
-        gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, bufferId);
-        gl3.glVertexAttribPointer(attributeIndex, 3, GL3.GL_FLOAT, false, 0, 0);
-        gl3.glDrawArrays(primitiveType, 0, vertexCount);
-        gl3.glDisableVertexAttribArray(attributeIndex);
+    public void render(GL4 gl4) {
+        gl4.glEnableVertexAttribArray(attributeIndex);
+        gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, bufferId);
+        gl4.glVertexAttribPointer(attributeIndex, 3, GL4.GL_FLOAT, false, 0, 0);
+        gl4.glDrawArrays(primitiveType, 0, vertexCount);
+        gl4.glDisableVertexAttribArray(attributeIndex);
     }
     
 }

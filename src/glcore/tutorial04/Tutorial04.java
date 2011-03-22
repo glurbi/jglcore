@@ -6,7 +6,7 @@ import static glcore.tutorial04.Utils.ubyte;
 
 import java.util.Stack;
 
-import javax.media.opengl.GL3;
+import javax.media.opengl.GL4;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
@@ -70,33 +70,33 @@ public class Tutorial04 implements GLEventListener {
     
     public void init(GLAutoDrawable drawable) {
         
-        GL3 gl3 = drawable.getGL().getGL3();
+        GL4 gl4 = (GL4) drawable.getGL();
         
         triangle = new GeometryBuilder()
-                    .addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, triangleVertices)
-                    .addAtribute(COLOR_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, triangleColors)
-                    .setPrimitiveType(GL3.GL_TRIANGLES)
+                    .addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL4.GL_FLOAT, triangleVertices)
+                    .addAtribute(COLOR_ATTRIBUTE_INDEX, 3, GL4.GL_FLOAT, triangleColors)
+                    .setPrimitiveType(GL4.GL_TRIANGLES)
                     .setVertexCount(3)
-                    .build(gl3);
+                    .build(gl4);
         
         quad = new GeometryBuilder()
-                    .addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL3.GL_FLOAT, quadVertices)
-                    .addAtribute(COLOR_ATTRIBUTE_INDEX, 3, GL3.GL_UNSIGNED_BYTE, quadColors)
-                    .setPrimitiveType(GL3.GL_TRIANGLES)
+                    .addAtribute(POSITION_ATTRIBUTE_INDEX, 3, GL4.GL_FLOAT, quadVertices)
+                    .addAtribute(COLOR_ATTRIBUTE_INDEX, 3, GL4.GL_UNSIGNED_BYTE, quadColors)
+                    .setPrimitiveType(GL4.GL_TRIANGLES)
                     .setVertexCount(6)
-                    .build(gl3);
+                    .build(gl4);
 
         program = new ProgramBuilder()
                     .setVertexShaderSource(loadTextResource("shader.vert", this))
                     .setFragmentShaderSource(loadTextResource("shader.frag", this))
                     .addAttribute(POSITION_ATTRIBUTE_INDEX, "position")
                     .addAttribute(COLOR_ATTRIBUTE_INDEX, "color")
-                    .build(gl3);
+                    .build(gl4);
     }
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        GL3 gl3 = drawable.getGL().getGL3();
-        gl3.glViewport(0, 0, width, height);
+        GL4 gl4 = (GL4) drawable.getGL();
+        gl4.glViewport(0, 0, width, height);
         // we keep track of the aspect ratio to adjust the projection volume
         aspectRatio = 1.0f * width / height;
     }
@@ -104,9 +104,9 @@ public class Tutorial04 implements GLEventListener {
     public void display(GLAutoDrawable drawable) {
         long elapsed = System.currentTimeMillis() - start;
     	Stack<Matrix44> mvp = new Stack<Matrix44>();
-        GL3 gl3 = drawable.getGL().getGL3();
-        gl3.glClear(GL3.GL_COLOR_BUFFER_BIT);
-        program.use(gl3);
+        GL4 gl4 = (GL4) drawable.getGL();
+        gl4.glClear(GL4.GL_COLOR_BUFFER_BIT);
+        program.use(gl4);
 
         // every 5 seconds, we swap from orthogonal to perspective projection
         mvp.push(Matrix44.identity());
@@ -116,22 +116,22 @@ public class Tutorial04 implements GLEventListener {
             mvp.push(mvp.peek().frustum(left, right, bottom / aspectRatio, top / aspectRatio, near, far));
         }
         
-        int matrix = gl3.glGetUniformLocation(program.getProgramId(), "mvpMatrix");
+        int matrix = gl4.glGetUniformLocation(program.getProgramId(), "mvpMatrix");
         
         mvp.push(mvp.peek().translate(0.0f, 0.0f, -2.0f));
         mvp.push(mvp.peek().rotate(elapsed / 10, 0.0f, 1.0f, 0.0f));
-        gl3.glUniformMatrix4fv(matrix, 1, false, mvp.peek().raw(), 0);
-        triangle.render(gl3);
+        gl4.glUniformMatrix4fv(matrix, 1, false, mvp.peek().raw(), 0);
+        triangle.render(gl4);
         mvp.pop();
 
         mvp.push(mvp.peek().rotate(elapsed / 5, 0.0f, 1.0f, 0.0f));
-        gl3.glUniformMatrix4fv(matrix, 1, false, mvp.peek().raw(), 0);
-        quad.render(gl3);
+        gl4.glUniformMatrix4fv(matrix, 1, false, mvp.peek().raw(), 0);
+        quad.render(gl4);
         mvp.pop();
         
         mvp.pop();
         
-        gl3.glFlush();
+        gl4.glFlush();
     }
 
     public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {

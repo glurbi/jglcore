@@ -2,7 +2,7 @@ package glcore.tutorial04;
 
 import java.util.List;
 
-import javax.media.opengl.GL3;
+import javax.media.opengl.GL4;
 
 public class Geometry {
 
@@ -29,17 +29,17 @@ public class Geometry {
         this.primitiveType = primitiveType;
     }
     
-    public void render(GL3 gl3) {
+    public void render(GL4 gl4) {
     	for (Attribute attribute : attributes) {
-    		gl3.glEnableVertexAttribArray(attribute.index);
-    		gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, attribute.bufferName);
-    		gl3.glVertexAttribPointer(attribute.index, attribute.components, attribute.dataType, false, 0, 0);
+    		gl4.glEnableVertexAttribArray(attribute.index);
+    		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, attribute.bufferName);
+    		gl4.glVertexAttribPointer(attribute.index, attribute.components, attribute.dataType, false, 0, 0);
     	}
-        gl3.glDrawArrays(primitiveType, 0, vertexCount);
+        gl4.glDrawArrays(primitiveType, 0, vertexCount);
     	for (Attribute attribute : attributes) {
-    		gl3.glDisableVertexAttribArray(attribute.index);
+    		gl4.glDisableVertexAttribArray(attribute.index);
     	}
-        gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, 0);
+        gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
     }
     
 }
