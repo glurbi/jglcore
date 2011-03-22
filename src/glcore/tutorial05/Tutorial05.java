@@ -9,7 +9,8 @@ import javax.media.opengl.GLEventListener;
 
 /**
  * This tutorial is built on top of Tutorial04. It demonstrates how to implement
- * lighting in the shader.
+ * lighting in the shader. The MatrixStack class has been introduced to keep track
+ * of the model view matrix, in addition to the model view projection matrix.
  */
 public class Tutorial05 implements GLEventListener {
     
@@ -77,12 +78,12 @@ public class Tutorial05 implements GLEventListener {
         0.0f, 0.0f, -1.0f,
         
         // front face
-        0.0f, 0.0f, -1.0f,
-        0.0f, 0.0f, -1.0f,
-        0.0f, 0.0f, -1.0f,
-        0.0f, 0.0f, -1.0f,
-        0.0f, 0.0f, -1.0f,
-        0.0f, 0.0f, -1.0f, 
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f, 
         
         // bottom face
         0.0f, -1.0f, 0.0f,
@@ -164,23 +165,25 @@ public class Tutorial05 implements GLEventListener {
         GL4 gl4 = (GL4) drawable.getGL();
         gl4.glClear(GL4.GL_COLOR_BUFFER_BIT);
         gl4.glEnable(GL4.GL_CULL_FACE);
-        gl4.glPolygonMode(GL4.GL_FRONT_AND_BACK, GL4.GL_LINE);
         program.use(gl4);
 
-        int matrix = gl4.glGetUniformLocation(program.getProgramId(), "mvpMatrix");
+        int mvpMatrix = gl4.glGetUniformLocation(program.getProgramId(), "mvpMatrix");
+        int mvMatrix = gl4.glGetUniformLocation(program.getProgramId(), "mvMatrix");
         int color = gl4.glGetUniformLocation(program.getProgramId(), "color");
-        
-        stack.push(Matrix44.frustum(left, right, bottom / aspectRatio, top / aspectRatio, near, far));
-        stack.push(Matrix44.translate(0.0f, 0.0f, -3.0f));
-        stack.push(Matrix44.rotate(elapsed / 10, 1.0f, 0.0f, 0.0f));
-        stack.push(Matrix44.rotate(elapsed / 5, 0.0f, 1.0f, 0.0f));
-        gl4.glUniformMatrix4fv(matrix, 1, false, stack.getModelViewProjection().raw(), 0);
+        int lightDir = gl4.glGetUniformLocation(program.getProgramId(), "lightDir");
+        stack.pushProjection(Matrix44.frustum(left, right, bottom / aspectRatio, top / aspectRatio, near, far));
+        stack.pushModelView(Matrix44.translate(0.0f, 0.0f, -3.0f));
+        stack.pushModelView(Matrix44.rotate(elapsed / 10, 1.0f, 0.0f, 0.0f));
+        stack.pushModelView(Matrix44.rotate(elapsed / 5, 0.0f, 1.0f, 0.0f));
+        gl4.glUniformMatrix4fv(mvpMatrix, 1, false, stack.getModelViewProjectionMatrix().raw(), 0);
+        gl4.glUniformMatrix4fv(mvMatrix, 1, false, stack.getModelViewMatrix().raw(), 0);
         gl4.glUniform3f(color, 0.0f, 1.0f, 0.0f);
+        gl4.glUniform3f(lightDir, 0.0f, 0.0f, -1.0f);
         cube.render(gl4);
-        stack.pop();
-        stack.pop();
-        stack.pop();
-        stack.pop();
+        stack.popModelView();
+        stack.popModelView();
+        stack.popModelView();
+        stack.popProjection();
         
         gl4.glFlush();
     }
